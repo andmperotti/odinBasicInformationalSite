@@ -1,21 +1,22 @@
-const http = require("node:http");
-const axios = require("axios");
 const fs = require("node:fs");
 const index = fs.readFileSync("index.html");
 const about = fs.readFileSync("about.html");
 const contact = fs.readFileSync("contact-me.html");
-const error = fs.readFileSync("404.html");
+const errorPage = fs.readFileSync("404.html");
+const express = require("express");
 
-const server = http.createServer((req, res) => {
-  if (req.url === "/") {
-    res.end(index);
-  } else if (req.url === "/about") {
-    res.end(about);
-  } else if (req.url === "/contact-me") {
-    res.end(contact);
-  } else {
-    res.end(error);
-  }
+const app = express();
+
+app.get("/", (req, res) => res.end(index));
+app.get("/about", (req, res) => res.end(about));
+app.get("/contact", (req, res) => res.end(contact));
+app.use((req, res) => {
+  res.status(404).end(errorPage);
 });
 
-server.listen(process.env.PORT);
+app.listen(process.env.PORT, (error) => {
+  if (error) {
+    throw error;
+  }
+  console.log(`My first Express app - listening on port ${process.env.PORT}!`);
+});
